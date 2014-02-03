@@ -19,10 +19,23 @@ class Sort(object):
 
     #def __init__(self):
 
-    def bubbleSort(self, values):
+    def bubbleSort(self, values, enhanced=False, verbose=False):
         """ Executing bubble sort algorithm on the list 'values'. 'values' is passed by reference! '"""
-        print "Executing bubble sort..."
+        if verbose:
+            print "Executing bubble sort..."
+        swaps = True
         for pas in range(1,len(values)):
-            for n in range(0, len(values)-1):
+            print "Passaggio %d" % pas
+            if enhanced:
+                maxpas = len(values) - pas 
+                if swaps is not True:
+                    return
+                else:
+                    swaps = False
+            else:
+                maxpas = len(values) - 1
+            for n in range(0, maxpas):
                 if(values[n] > values[n+1]):
                     values[n], values[n+1] = values[n+1], values[n] # swap
+                    print "Scambio %d" % (n+1)
+                    swaps = True

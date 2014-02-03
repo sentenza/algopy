@@ -66,7 +66,7 @@ def controller():
         VERBOSE=True
     if arguments.values is not None and arguments.sort is not None:
         s = Sort()
-        s.bubbleSort(arguments.values)
+        s.bubbleSort(arguments.values, verbose=True, enhanced=True)
         print "Values ordered: %s" % arguments.values
     else:
         parser.print_help()
