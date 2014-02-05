@@ -23,6 +23,7 @@ except ImportError, e:
     sys.stderr.write("You must install argparse: https://pypi.python.org/pypi/argparse")
     sys.exit(1)
 import subprocess
+import logging
 from algorithms.sort import Sort
 
 # Create variables out of shell commands
@@ -30,6 +31,9 @@ from algorithms.sort import Sort
 
 # You could add another bash command here
 # HOLDING_SPOT="""fake_command"""
+    
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 def runBash(cmd):
@@ -38,6 +42,7 @@ def runBash(cmd):
     out = p.stdout.read().strip()
     return out  #This is the stdout from the shell command
 
+# TODO: suppress VERBOSE
 VERBOSE=False
 def report(output,cmdtype="UNIX COMMAND:"):
     """ if VERBOSE==true prints the command type and the output of the command """
@@ -52,21 +57,23 @@ def report(output,cmdtype="UNIX COMMAND:"):
 def controller():
     """ Controls the argument parsing with argparse module """
     global VERBOSE
+    logger.info("controller method")
+    sorter = Sort()
 
     # Create instance of argparse.ArgumentParser Module, included in Standard Library from Python>=2.7
     parser = argparse.ArgumentParser(prog="algopy", description="Python shell script that serves common algorithms");
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.1')
-    parser.add_argument('--verbose', default=False)
+    parser.add_argument('--version', action='version', version='%(prog)s 0.1')
+    parser.add_argument('-v', '--verbose', default=False)
     parser.add_argument('-a', '--array', nargs='+', type=int, help="A list of numbers", dest="values")
-    parser.add_argument('-s', '--sort', help="Sorting algorithm", nargs='?', const="bubble", choices=['bubble'], metavar=('bubble'))
+    parser.add_argument('-s', '--sort', help="Sorting algorithm", nargs='?', const="bubble", choices=['bubble'], 
+            metavar=('bubble'))
 
     #Option Handling passes correct parameter to runBash
     arguments = parser.parse_args()
     if arguments.verbose:
         VERBOSE=True
     if arguments.values is not None and arguments.sort is not None:
-        s = Sort()
-        s.bubbleSort(arguments.values, verbose=True, enhanced=True)
+        sorter.bubbleSort(arguments.values, enhanced=True)
         print "Values ordered: %s" % arguments.values
     else:
         parser.print_help()

@@ -13,19 +13,20 @@
 ##
 ##   You should have received a copy of the GNU General Public License
 ##   along with this program. If not, see <http://www.gnu.org/licenses/>.
+import logging
 
 class Sort(object):
     """ Sorting algorithms """
 
-    #def __init__(self):
+    def __init__(self, logger=None):
+        self.logger = logger or logging.getLogger(__name__)
 
-    def bubbleSort(self, values, enhanced=False, verbose=False):
+    def bubbleSort(self, values, enhanced=False):
         """ Executing bubble sort algorithm on the list 'values'. 'values' is passed by reference! '"""
-        if verbose:
-            print "Executing bubble sort..."
+        self.logger.info("Executing bubble sort with enhancements=%s" % enhanced)
         swaps = True
         for pas in range(1,len(values)):
-            print "Passaggio %d" % pas
+            self.logger.debug("[Bubble Sort] Passage %d" % pas)
             if enhanced:
                 maxpas = len(values) - pas 
                 if swaps is not True:
@@ -37,5 +38,5 @@ class Sort(object):
             for n in range(0, maxpas):
                 if(values[n] > values[n+1]):
                     values[n], values[n+1] = values[n+1], values[n] # swap
-                    print "Scambio %d" % (n+1)
+                    self.logger.debug("[Bubble Sort] Swap %d" % (n+1))
                     swaps = True
