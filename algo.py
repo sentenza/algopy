@@ -26,6 +26,11 @@ import subprocess
 import logging
 from algorithms.sort import Sort
 
+if sys.version_info < (2, 6):
+    print('ERROR: %s' % sys.exc_info()[1])
+    print('ERROR: this script requires Python 2.6 or greater.')
+    sys.exit(101)
+
 # Create variables out of shell commands
 # Note triple quotes can embed Bash
 
