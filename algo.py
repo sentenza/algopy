@@ -26,6 +26,8 @@ import subprocess
 import logging
 from algorithms.sort import Sort
 
+__version__ = "0.1"
+
 if sys.version_info < (2, 6):
     print('ERROR: %s' % sys.exc_info()[1])
     print('ERROR: this script requires Python 2.6 or greater.')
@@ -37,8 +39,6 @@ if sys.version_info < (2, 6):
 # You could add another bash command here
 # HOLDING_SPOT="""fake_command"""
     
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
 
 
 def runBash(cmd):
@@ -47,36 +47,39 @@ def runBash(cmd):
     out = p.stdout.read().strip()
     return out  #This is the stdout from the shell command
 
-# TODO: suppress VERBOSE
-VERBOSE=False
 def report(output,cmdtype="UNIX COMMAND:"):
-    """ if VERBOSE==true prints the command type and the output of the command """
     #Notice the global statement allows input from outside of function
-    if VERBOSE:
-        print "%s: %s" % (cmdtype, output)
+    logger.info("%s: %s" % (cmdtype, output))
+
+def _logging_level(level):
+    LEVELS = [logging.DEBUG, logging.INFO, logging.WARN, logging.ERROR, logging.FATAL]
+    if level is None:
+        logging.basicConfig(level=LEVELS[-1]) # CRITICAL level is the default one
+    elif level > len(LEVELS)-1 :
+        logging.basicConfig(level=LEVELS[0]) # Too much -v -> go to debug
     else:
-        print output
+        logging.basicConfig(level=LEVELS[-level-1])
 
 
 #Function to control option parsing in Python
 def controller():
     """ Controls the argument parsing with argparse module """
-    global VERBOSE
-    logger.info("controller method")
+    global logger
     sorter = Sort()
 
     # Create instance of argparse.ArgumentParser Module, included in Standard Library from Python>=2.7
     parser = argparse.ArgumentParser(prog="algopy", description="Python shell script that serves common algorithms");
-    parser.add_argument('--version', action='version', version='%(prog)s 0.1')
-    parser.add_argument('-v', '--verbose', default=False)
+    parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__), 
+            help='show the program version')
+    parser.add_argument('-v', '--verbose', action='count', help='Increase verbosity')
     parser.add_argument('-a', '--array', nargs='+', type=int, help="A list of numbers", dest="values")
     parser.add_argument('-s', '--sort', help="Sorting algorithm", nargs='?', const="bubble", choices=['bubble'], 
             metavar=('bubble'))
 
     #Option Handling passes correct parameter to runBash
     arguments = parser.parse_args()
-    if arguments.verbose:
-        VERBOSE=True
+    _logging_level(arguments.verbose)
+    logger = logging.getLogger(__name__)
     if arguments.values is not None and arguments.sort is not None:
         sorter.bubbleSort(arguments.values, enhanced=True)
         print "Values ordered: %s" % arguments.values
